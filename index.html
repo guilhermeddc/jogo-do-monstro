@@ -1,0 +1,26 @@
+<meta charset="UTF-8" />
+<title>Matador de Monstro!</title>
+<link rel="stylesheet" href="style.css" />
+<script src="https://unpkg.com/vue"></script>
+
+<div id="app">
+    <div class="header">
+        <h1>Jogador</h1>
+        <div class="barra-progresso">
+            <div class="progresso" :style="{ width: jogador }"></div>
+        </div>
+    </div>
+    <div class="header">
+        <h1>Monstro</h1>
+        <div class="barra-progresso">
+            <div class="progresso" :style="{ width: monstro }"></div>
+        </div>
+    </div>
+    <br>
+    <button v-if="iniciar" @click="iniciar = !iniciar">Iniciar Novo Jogo</button>
+    <button v-if="!iniciar" @click="ataque">Ataque</button>
+    <button v-if="!iniciar" @click="ataqueEspecial">Ataque Especial</button>
+    <button v-if="!iniciar" @click="cura">Cura</button>
+    <button v-if="!iniciar" @click="iniciar = !iniciar">Desistir</button>
+</div>
+<script src="app.js"></script>
