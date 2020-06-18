@@ -1,36 +1,55 @@
 new Vue({
     el: '#app',
     data: {
-        iniciar: true,
-        jogador: '100%',
-        monstro: '100%',
-        jTotal: 100,
-        mTotal: 100
+        running: false,
+        playerLife: 100,
+        monsterLife: 100,
+        logs: []
+    },
+    computed: {
+        hasResult() {
+            return this.playerLife == 0 || this.monsterLife == 0
+        }
     },
     methods: {
-        ataque(novo, velho) {
-            console.log(novo, velho)
-            let j = (Math.random()) * 10
-            let m = (Math.random()) * 10
-            this.jTotal = this.jTotal - j
-            this.mTotal = this.mTotal - m
-            this.jogador = `${this.jTotal}%`
-            this.monstro = `${this.mTotal}%`
+        startGame() {
+            this.running = true
+            this.playerLife = 100
+            this.monsterLife = 100
+            this.logs = []
         },
-        ataqueEspecial(novo, velho) {
-            let j = (Math.random()) * 5
-            let m = (Math.random()) * 5
-            this.jTotal = this.jTotal - (j - 1)
-            this.mTotal = this.mTotal - (m + 1)
-            this.jogador = `${this.jTotal - (j - 1)}%`
-            this.monstro = `${this.mTotal - (m + 1)}%`
+        attack(especial) {
+            this.hurt('monsterLife', 5, 10, especial, 'Jogador', 'Monstro', 'player')
+            if (this.monsterLife > 0) {
+                this.hurt('playerLife', 7, 12, false, 'Monstro', 'Jogador', 'monster')                
+            }
         },
-        cura(novo, velho) {
-            let j = (Math.random()) * 5
-            let m = (Math.random()) * 5
-            this.jTotal = this.jTotal + (j - 1)
-            this.jTotal = this.jTotal - (j - 1)
-            this.jogador = `${this.jTotal + (j - 1)}%`
+        hurt(prop, min, max, especial, source, target, cls) {
+            const plus = especial ? 5 : 0
+            const hurt = this.getRandom(min + plus, max + plus)
+            this[prop] = Math.max(this[prop] - hurt, 0)
+            this.registerLog(`${source} atingiu ${target} com ${hurt}.`, cls)
+        },
+        healAndHurt() {
+            this.heal(10, 15)
+            this.hurt('playerLife', 7, 12, false, 'Monstro', 'Jogador', 'monster')
+        },
+        heal(min, max) {
+            const heal = this.getRandom(min, max)
+            this.playerLife = Math.min(this.playerLife + heal, 100)
+            this.registerLog(`Jogador ganhou força de ${heal}.`, 'player')
+        },
+        getRandom(min, max) {
+            const value = Math.random() * (max - min) + min
+            return Math.round(value)
+        },
+        registerLog(text, cls) {
+            this.logs.unshift({ text, cls })
+        }
+    },
+    watch: {
+        hasResult(value) {
+            if (value) this.running = false
         }
     },
 })
